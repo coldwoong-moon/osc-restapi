@@ -13,6 +13,13 @@
                 "app.main:app",
                 "--reload"
             ],
+            "env":{
+                "OSC_BUILD_CONFIGURATION": "dev",
+                "OSC_DEV_DB_USERNAME": "yunwoo_rpms",
+                "OSC_DEV_DB_PASSWORD": "a#!yBYsi&C95",
+                "OSC_DEV_DB_HOST": "175.126.203.170",
+                "OSC_DEV_DB_NAME": "osc_test",
+            },
             "jinja": true
         }
     ]

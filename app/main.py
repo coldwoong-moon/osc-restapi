@@ -1,10 +1,16 @@
 from fastapi import FastAPI
-from app.api.endpoints import user
+from app.api.endpoints import login
+from app.db.config import validate_db_config, ConfigException
 
-app = FastAPI(title="Off Site Construction API")
+app = FastAPI(title="OSC API")
 
-app.include_router(user.router, prefix="/user", tags=["user"])
+app.include_router(login.router, prefix="/login", tags=["Login"])
 
-@app.get("/", tags=["123"])
-async def root():
-    return {"message": "Welcome to the API"}
+
+@app.on_event("startup")
+async def startup_event():
+    try:
+        validate_db_config()
+    except ConfigException as e:
+        print(f"설정 오류: {str(e)}")
+        raise

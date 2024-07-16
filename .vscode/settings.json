@@ -1,4 +1,11 @@
 {
     "editor.fontFamily": "'DroidSansM Nerd Font', Consolas, 'Courier New', monospace",
-    "editor.fontSize": 13
+    "editor.fontSize": 13,
+    "editor.codeActionsOnSave": {
+
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+    }
 }
