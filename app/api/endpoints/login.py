@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import bcrypt
 
 
-from app.db.manager import get_db_connection
+from app.db.config import get_db_connection
 from app.models.user import User
 from app.models.authority import Authority
 
