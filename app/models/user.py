@@ -1,4 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import BINARY, BLOB, INTEGER, VARCHAR, Column, LargeBinary
 
 Base = declarative_base()
@@ -11,7 +12,7 @@ class User(Base):
     email = Column(VARCHAR(50), unique=True)
     uuid = Column(LargeBinary)
     name = Column(VARCHAR(50))
-    password = Column(BLOB)
+    password: Mapped[bytes] = mapped_column(BLOB)
     partner_id = Column(INTEGER)
     dept = Column(VARCHAR(50))
     rank = Column(VARCHAR(20))

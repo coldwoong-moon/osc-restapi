@@ -1,48 +1,15 @@
-Python으로 RestAPI 서버를 만들 때 프로젝트를 효율적으로 관리하기 위한 구조와 방법에 대해 설명해 드리겠습니다.
+## OSC RestAPI 사용 가이드
+### 개발 환경
+- Language : Python 3.11 FastAPI
+    - 진입점 : [main.py](app/main.py)
+- Environment
+    - `OSC_BUILD_CONFIGURATION`: `dev` or `release`
+    - `OSC_DEV_DB_USERNAME`: 데이터베이스 사용자 이름
+    - `OSC_DEV_DB_PASSWORD`: 데이터베이스 사용자 비밀번호
+    - `OSC_DEV_DB_HOST`: 데이터베이스 호스트 IP 또는 URL
+    - `OSC_DEV_DB_NAME`: 데이터베이스 이름
 
-1. 프레임워크 선택:
-   - FastAPI 또는 Flask를 사용하는 것이 좋습니다. 이 예시에서는 FastAPI를 사용하겠습니다.
-
-2. 프로젝트 구조:
-다음과 같은 디렉토리 구조를 추천합니다:
-
-```
-my_api_project/
-├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── api/
-│   │   ├── __init__.py
-│   │   ├── endpoints/
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py
-│   │   │   └── item.py
-│   ├── core/
-│   │   ├── __init__.py
-│   │   ├── config.py
-│   │   └── security.py
-│   ├── db/
-│   │   ├── __init__.py
-│   │   └── database.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── user.py
-│   │   └── item.py
-│   └── schemas/
-│       ├── __init__.py
-│       ├── user.py
-│       └── item.py
-├── tests/
-│   ├── __init__.py
-│   ├── test_api.py
-│   └── test_models.py
-├── .env
-├── .gitignore
-├── requirements.txt
-└── README.md
-```
-
-3. 각 디렉토리 및 파일의 역할:
+### 각 디렉토리 및 파일의 역할:
 
 - `app/`: 메인 애플리케이션 코드
 - `app/main.py`: FastAPI 애플리케이션 및 라우터 설정
@@ -52,60 +19,6 @@ my_api_project/
 - `app/models/`: 데이터베이스 모델 (ORM)
 - `app/schemas/`: Pydantic 모델 (요청/응답 검증)
 - `tests/`: 단위 테스트 및 통합 테스트
-- `.env`: 환경 변수 (데이터베이스 URL, API 키 등)
-- `requirements.txt`: 프로젝트 의존성
-
-4. 코드 예시:
-
-`app/main.py`:
-
-
-
-```python
-from fastapi import FastAPI
-from app.api.endpoints import user, item
-from app.core.config import settings
-
-app = FastAPI(title=settings.PROJECT_NAME)
-
-app.include_router(user.router, prefix="/users", tags=["users"])
-app.include_router(item.router, prefix="/items", tags=["items"])
-
-@app.get("/")
-async def root():
-    return {"message": "Welcome to the API"}
-
-```
-
-`app/api/endpoints/user.py`:
-
-
-
-```python
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from app.db.database import get_db
-from app.schemas.user import UserCreate, User
-from app.models.user import User as UserModel
-
-router = APIRouter()
-
-@router.post("/", response_model=User)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = UserModel(email=user.email, hashed_password=user.password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-@router.get("/{user_id}", response_model=User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = db.query(UserModel).filter(UserModel.id == user_id).first()
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
-
-```
 
 5. 프로젝트 관리 방식:
 

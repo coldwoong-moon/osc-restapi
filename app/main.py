@@ -1,9 +1,25 @@
 from fastapi import FastAPI
 from app.api.endpoints import login
-from app.db.config import validate_db_config, ConfigException
+from app.db.manager import validate_db_config, ConfigException
+from starlette.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="OSC API")
+origins = ["*"]
 
+app = FastAPI()
+app.title = "OSC API"
+app.root_path = "/"
+app.servers = [
+    {"url": "/", "description": "Debug"},
+    {"url": "http://develop.yteg.co.kr:8090", "description": "개발 테스트 서버"},
+    {"url": "https://osc.yteg.co.kr", "description": "실증 서버"},
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(login.router, prefix="/login", tags=["Login"])
 
 

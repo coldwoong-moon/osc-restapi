@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import bcrypt
 
 
-from app.db.config import get_mariadb_connection
+from app.db.manager import get_db_connection
 from app.models.user import User
 from app.models.authority import Authority
 
@@ -17,8 +17,8 @@ class LoginInfo(BaseModel):
 router = APIRouter()
 
 
-@router.post("/")
-def login_user(login_info: LoginInfo, db: Session = Depends(get_mariadb_connection)):
+@router.post("")
+def login_user(login_info: LoginInfo, db: Session = Depends(get_db_connection)):
     user = db.query(User).filter(User.email == login_info.email).first()
 
     if user is None:
@@ -51,6 +51,6 @@ def login_user(login_info: LoginInfo, db: Session = Depends(get_mariadb_connecti
         "tel": user.telno,
         "mobile": user.mbtlnum,
         "roleId": authority.authorityName,
-        "auth": authority.authorityName == "ROLE_ADMIN" if "A" else "U",
+        "auth": "A" if authority.authorityName == "ROLE_ADMIN" else "U",
         "username": user.name,
     }
