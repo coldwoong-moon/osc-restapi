@@ -1,12 +1,14 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import VARCHAR, Column
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import DeclarativeBase
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
 
 
 class Authority(Base):
-    __tablename__ = "authority"
+    __tablename__ = 'authority'
 
-    id = Column(VARCHAR(50), nullable=True, primary_key=True)
-    authorityName: Mapped[str] = mapped_column(VARCHAR(20), nullable=True)
+    no = Column(Integer, nullable=True, primary_key=True)
+    id = Column(String, nullable=True)
+    authorityName = Column(String, nullable=True)

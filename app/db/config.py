@@ -1,7 +1,8 @@
-import os
 import inspect
+import os
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 
 __PROD_NAME__ = "OSC"
 __ENV_NAME__ = f"{__PROD_NAME__}_BUILD_CONFIGURATION"
@@ -16,7 +17,7 @@ class ConfigNotFoundException(Exception):
     pass
 
 
-env = os.environ.get(__ENV_NAME__, "dev").upper()
+env = os.environ.get(__ENV_NAME__, "DEV").upper()
 
 if env is None or env == "":
     raise ConfigException(
@@ -31,7 +32,15 @@ class EnvConfig:
     HOST: str | None = ""
     PORT: int | None = 0
 
-    env_name = {
+    def __init__(self) -> None:
+        if env != "DEV" and env != "RELEASE":
+            raise ConfigException(
+                f"'{env}' 환경에 해당하는 설정이 없습니다. 유효한 값: 'DEV', 'RELEASE'"
+            )
+
+        self.__set_env__()
+
+    __env_name__ = {
         "USERNAME": f"{__PROD_NAME__}_{env}_DB_USERNAME {type(USERNAME)}",
         "PASSWORD": f"{__PROD_NAME__}_{env}_DB_PASSWORD {type(PASSWORD)}",
         "NAME": f"{__PROD_NAME__}_{env}_DB_NAME {type(NAME)}",
@@ -39,28 +48,12 @@ class EnvConfig:
         "PORT": f"{__PROD_NAME__}_{env}_DB_PORT {type(PORT)}",
     }
 
-    class SERVER:
-        HOST = None
-        PORT = None
-
-    def __init__(self) -> None:
-
-        if env.lower() == "dev":
-            self.set_env()
-
-        elif env.lower() == "release":
-            self.set_env()
-        else:
-            raise ConfigException(
-                f"'{env}'에 해당하는 설정이 없습니다. 유효한 값: 'dev', 'release'"
-            )
-
-    def set_env(self):
-        self.USERNAME = os.environ.get(f"{__PROD_NAME__}_{env}_DB_USERNAME")
-        self.PASSWORD = os.environ.get(f"{__PROD_NAME__}_{env}_DB_PASSWORD")
-        self.NAME = os.environ.get(f"{__PROD_NAME__}_{env}_DB_NAME")
-        self.HOST = os.environ.get(f"{__PROD_NAME__}_{env}_DB_HOST")
-        self.PORT = os.environ.get(f"{__PROD_NAME__}_{env}_DB_PORT")
+    def __set_env__(self):
+        self.USERNAME = os.environ.get(self.__env_name__.get("USERNAME").split(' ')[0])
+        self.PASSWORD = os.environ.get(self.__env_name__.get("PASSWORD").split(' ')[0])
+        self.NAME = os.environ.get(self.__env_name__.get("NAME").split(' ')[0])
+        self.HOST = os.environ.get(self.__env_name__.get("HOST").split(' ')[0])
+        self.PORT = os.environ.get(self.__env_name__.get("PORT").split(' ')[0])
 
 
 config = EnvConfig()
@@ -70,15 +63,19 @@ def validate_db_config():
     try:
         empty_member_list = []
 
-        for name, value in inspect.getmembers(EnvConfig):
+        print("[DB Environments]")
+        for name, value in inspect.getmembers(config):
             if name.startswith("__") or name == "":
                 continue
 
-            if value is "" or value is 0:
-                empty_member_list.append(f"{EnvConfig.env_name.get(name)}")
+            if value in (0, "", None):
+                print(f"add empty list : {name}, {value}")
+                empty_member_list.append(f"{config.__env_name__.get(name)}")
 
-        if 0 != empty_member_list.count:
-            raise ConfigNotFoundException("다음 환경 변수의 값을 찾을 수 없습니다.\n - " + '\n - '.join(empty_member_list))
+            print(f" @ {name} : {value}")
+
+        if len(empty_member_list):
+            raise ConfigNotFoundException("다음 환경 변수의 값을 찾을 수 없습니다." + "\n - " + '\n - '.join(empty_member_list))
 
     except:
         raise
@@ -87,14 +84,9 @@ def validate_db_config():
 def get_db_connection():
     engine = create_engine(
         f"mysql+pymysql://{config.USERNAME}:{config.PASSWORD}@{config.HOST}:{config.PORT}/{config.NAME}")
-    print(
-        f"mysql+pymysql://{config.DB.USERNAME}:{config.DB.PASSWORD}@{config.DB.HOST}:{config.DB.PORT}/{config.DB.NAME}")
     sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = sessionLocal()
     try:
         yield db
     finally:
         db.close()
-
-# def get_redis_connection():
-#     Redis(host=)

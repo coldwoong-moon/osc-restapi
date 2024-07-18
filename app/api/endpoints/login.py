@@ -1,12 +1,11 @@
+import bcrypt
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-import bcrypt
-
 
 from app.db.config import get_db_connection
-from app.models.user import User
 from app.models.authority import Authority
+from app.models.user import User
 
 
 class LoginInfo(BaseModel):

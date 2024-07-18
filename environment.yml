@@ -1,0 +1,12 @@
+name: osc
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - redis
+  - bcrypt
+  - fastapi
+  - pymysql
+  - sqlalchemy
+  - uvicorn
+prefix: /home/yunwoopc/.conda/envs/osc

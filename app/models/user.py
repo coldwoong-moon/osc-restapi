@@ -1,24 +1,25 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import BINARY, BLOB, INTEGER, VARCHAR, Column, LargeBinary
+from sqlalchemy import Column, Integer, String, LargeBinary
+from sqlalchemy.orm import DeclarativeBase
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
 
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = 'user'
 
-    id = Column(INTEGER, primary_key=True, index=True)
-    email = Column(VARCHAR(50), unique=True)
-    uuid = Column(LargeBinary)
-    name = Column(VARCHAR(50))
-    password: Mapped[bytes] = mapped_column(BLOB)
-    partner_id = Column(INTEGER)
-    dept = Column(VARCHAR(50))
-    rank = Column(VARCHAR(20))
-    telno = Column(VARCHAR(20))
-    mbtlnum = Column(VARCHAR(20))
-    isAccountNonExpired = Column(INTEGER)
-    isAccountNonLocked = Column(INTEGER)
-    isCredentialsNonExpired = Column(INTEGER)
-    isEnabled = Column(INTEGER)
+    id = Column(Integer, primary_key=True, nullable=True)
+    email = Column(String, nullable=True)
+    uuid = Column(LargeBinary, nullable=True)
+    name = Column(String, nullable=True)
+    password = Column(LargeBinary, nullable=True)
+    partner_id = Column(Integer)
+    dept = Column(String, nullable=True)
+    rank = Column(String, nullable=True)
+    telno = Column(String, nullable=True)
+    mbtlnum = Column(String, nullable=True)
+    isAccountNonExpired = Column(Integer, nullable=True)
+    isAccountNonLocked = Column(Integer, nullable=True)
+    isCredentialsNonExpired = Column(Integer, nullable=True)
+    isEnabled = Column(Integer, nullable=True)

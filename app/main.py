@@ -1,7 +1,8 @@
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+
 from app.api.endpoints import login
 from app.db.config import validate_db_config, ConfigException
-from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 app.title = "OSC API"
@@ -20,6 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(login.router, prefix="/login", tags=["Login"])
+
 
 @app.on_event("startup")
 async def startup_event():
