@@ -14,6 +14,10 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: list[str] = ["*"]
 
+    FILE_STORAGE_PATH: str = "./uploads"
+    FILE_CHUNK_SIZE: int = 1024 * 1024  # 1MB
+    FILE_MAX_SIZE: int = 10 * 1024 * 1024 * 1024  # 10GB
+
     JWT_SECRET: str = "rpms-dev-secret-change-in-production"
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_HOURS: int = 8

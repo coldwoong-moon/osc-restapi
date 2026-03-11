@@ -9,6 +9,7 @@ from app.api.v1 import (
     drawings,
     floors,
     health,
+    ifc_models,
     misc,
     parts,
     projects,
@@ -29,4 +30,5 @@ api_router.include_router(parts.router)
 api_router.include_router(boms.router)
 api_router.include_router(cranes.router)
 api_router.include_router(drawings.router)
+api_router.include_router(ifc_models.router)
 api_router.include_router(misc.router)
