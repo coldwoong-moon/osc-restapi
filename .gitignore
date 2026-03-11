@@ -177,3 +177,4 @@ pyrightconfig.json
 .idea
 .conda/
 .idea/
+.omc/

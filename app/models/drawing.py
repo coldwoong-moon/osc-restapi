@@ -1,24 +1,51 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, relationship
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text, LargeBinary
+from sqlalchemy.orm import relationship
+
+from app.db.base import Base
 
 
-class Base(DeclarativeBase):
-    pass
+class DrawingTree(Base):
+    __tablename__ = "drawing_tree"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(LargeBinary)
+    guid = Column(String)
+    name = Column(String)
+    drawing_div = Column(Integer)
+    depth = Column(Integer)
+    parent_id = Column(Integer, ForeignKey("drawing_tree.id"), nullable=True)
+    project_id = Column(Integer, ForeignKey("project.id"))
+
+    children = relationship("DrawingTree", foreign_keys=[parent_id])
+    drawings = relationship("Drawing", back_populates="drawing_tree")
 
 
 class Drawing(Base):
-    __tablename__ = 'drawing'
+    __tablename__ = "drawing"
 
-    name = Column(String, primary_key=True, nullable=True)
-    revision = Column(Integer, primary_key=True, nullable=True)
-    create_date = Column(DateTime, nullable=True)
-    regist_date = Column(DateTime, nullable=True)
-    file_name = Column(String, nullable=True)
-    save_file_name = Column(String, nullable=True)
-    description = Column(String, nullable=True)
-    number = Column(Integer, primary_key=True, nullable=True)
-    drawing_tree_id = Column(Integer, ForeignKey('drawing_tree.id'))
-    project_id = Column(Integer, primary_key=True, ForeignKey('project.id'))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String)
+    revision = Column(Integer)
+    create_date = Column(DateTime)
+    regist_date = Column(DateTime)
+    file_name = Column(String)
+    save_file_name = Column(String)
+    description = Column(Text)
+    number = Column(Integer)
+    drawing_tree_id = Column(Integer, ForeignKey("drawing_tree.id"))
+    project_id = Column(Integer, ForeignKey("project.id"))
 
-    project = relationship('Project')
-    drawing_tree = relationship('DrawingTree')
+    drawing_tree = relationship("DrawingTree", back_populates="drawings")
+
+
+class ReferenceDrawing(Base):
+    __tablename__ = "reference_drawing"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(LargeBinary)
+    guid = Column(String)
+    name = Column(String)
+    elevation = Column(Float)
+    file_name = Column(String)
+    save_file_name = Column(String)
+    project_id = Column(Integer, ForeignKey("project.id"))
